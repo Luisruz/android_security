@@ -3,8 +3,13 @@ package com.example.android_security;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -14,34 +19,63 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
-    private FirebaseAuth mAuth;
+    private EditText edtEmail, edtPass;
+    private Button btnlogin, btnRegister;
+    private String user, pass;
+    private FirebaseAuth firebaseAuth;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        edtEmail = findViewById(R.id.edtEmail);
+        edtPass = findViewById(R.id.edtPassword);
+        btnRegister = findViewById(R.id.btnRegister);
+        btnlogin = findViewById(R.id.btnLogin);
+        firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if(currentUser!=null){
-            mAuth.createUserWithEmailAndPassword("", "")
-                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(null, "createUserWithEmail:success");
-                                FirebaseUser user = mAuth.getCurrentUser();
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(null, "createUserWithEmail:failure", task.getException());
-                                Toast.makeText(MainActivity.this, "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-
-        }else{
-
+            Intent intentHome = new Intent(MainActivity.this, HomeActivity.class);
+            startActivity(intentHome);
         }
 
+        btnlogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user = edtEmail.getText().toString().trim();
+                pass = edtPass.getText().toString().trim();
+                if (TextUtils.isEmpty(user)) {
+                    Toast.makeText(MainActivity.this, "Ingrese Correo", Toast.LENGTH_SHORT).show();
+                    edtEmail.requestFocus();
+                    return;
+                } else if (TextUtils.isEmpty(pass)) {
+                    Toast.makeText(MainActivity.this, "Ingrese Contraseña", Toast.LENGTH_SHORT).show();
+                    edtPass.requestFocus();
+                    return;
+                } else {
+                    firebaseAuth.signInWithEmailAndPassword(user, pass)
+                            .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        Intent login = new Intent(MainActivity.this, HomeActivity.class);
+                                        startActivity(login);
+                                    } else {
+                                        Toast.makeText(MainActivity.this, "Correo y/o Contraseña Incorrectos", Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+                }
+            }
+        });
+        btnRegister.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentRegister = new Intent(MainActivity.this, RegisterActivity.class);
+                startActivity(intentRegister);
+            }
+        });
+
     }
+
 }
