@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -31,8 +32,8 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
 public class RegisterActivity extends AppCompatActivity {
-
-    static String clave = "luis123";
+    //cantidad de bytes permitidos para la clave 16/24/32
+    static String clave = "luisFelipe123456";
     private static SecretKeySpec secret;
     private EditText edtEmail, edtPassRegister, edtRepeatPassRegister;
     private Button btnRegister, btnReturn;
@@ -83,7 +84,6 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 } else {
                     try {
-                        //SecretKey secretKey = generateKey();
                         byte[] passEncrypt = encryptMsg(passUno, generateKey());
                         String passDecrypt = decryptMsg(passEncrypt, generateKey());
                         firebaseAuth.createUserWithEmailAndPassword(email, passDecrypt)
@@ -91,7 +91,13 @@ public class RegisterActivity extends AppCompatActivity {
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
+                                            edtEmail.setText("");
+                                            edtPassRegister.setText("");
+                                            edtRepeatPassRegister.setText("");
                                             Toast.makeText(RegisterActivity.this, "Usuario Creado Exitosamente", Toast.LENGTH_SHORT).show();
+                                            FirebaseAuth.getInstance().signOut();
+                                            Intent intentLogin = new Intent(RegisterActivity.this, MainActivity.class);
+                                            startActivity(intentLogin);
                                         } else {
                                             Toast.makeText(RegisterActivity.this, "Ha Ocurrido un Error", Toast.LENGTH_SHORT).show();
                                         }
@@ -102,10 +108,13 @@ public class RegisterActivity extends AppCompatActivity {
                     } catch (NoSuchPaddingException e) {
                         Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     } catch (InvalidKeyException e) {
+                        Log.i("error", e.toString());
                         Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     } catch (IllegalBlockSizeException e) {
+                        Log.i("error", e.toString());
                         Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     } catch (BadPaddingException e) {
+                        Log.i("error", e.toString());
                         Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                     } catch (UnsupportedEncodingException e) {
                         Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
