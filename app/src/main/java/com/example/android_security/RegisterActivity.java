@@ -38,7 +38,6 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText edtEmail, edtPassRegister, edtRepeatPassRegister;
     private Button btnRegister, btnReturn;
     String passUno, passDos, email;
-
     private FirebaseAuth firebaseAuth;
 
     @Override
