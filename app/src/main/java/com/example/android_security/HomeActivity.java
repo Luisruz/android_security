@@ -3,9 +3,11 @@ package com.example.android_security;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -21,11 +23,11 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+import javax.crypto.spec.SecretKeySpec;
+
 public class HomeActivity extends AppCompatActivity {
     private Button btnLogout, btnSave, btnGetContac, getBtnGetContac2;
     private TextView txtName, txtEmail, txtLatitude, txtLongitude, txtNumber, txtNumber2;
-    private LocationManager locationManager;
-    private Location location;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +51,19 @@ public class HomeActivity extends AppCompatActivity {
         btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
-                Toast.makeText(HomeActivity.this,"Logout Presionado", Toast.LENGTH_SHORT).show();
                 FirebaseAuth.getInstance().signOut();
+                Intent intentExit = new Intent(HomeActivity.this, MainActivity.class);
+                startActivity(intentExit);
             }
         });
+        //Recuperar Datos SharedPreferences
+        SharedPreferences sharedPreferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        String email = sharedPreferences.getString("email", "");
+        String pass = sharedPreferences.getString("pass", "");
+        txtEmail.setText(email);
+        txtName.setText(pass);
     }
+
 
     private void locationStart() {
         LocationManager mlocManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
@@ -82,30 +91,9 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-  /*  public void setLocation(Location loc) {
-        //Obtener la direccion de la calle a partir de la latitud y la longitud
-        if (loc.getLatitude() != 0.0 && loc.getLongitude() != 0.0) {
-            try {
-                Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-                List<Address> list = geocoder.getFromLocation(
-                        loc.getLatitude(), loc.getLongitude(), 1);
-                if (!list.isEmpty()) {
-                    Address DirCalle = list.get(0);
-                    //  direccion.setText(DirCalle.getAddressLine(0));
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-*/
     /* Aqui empieza la Clase Localizacion */
     public class Localizacion implements LocationListener {
         HomeActivity homeActivity;
-
-        public HomeActivity getMainActivity() {
-            return homeActivity;
-        }
 
         public void setMainActivity(HomeActivity homeActivity) {
             this.homeActivity = homeActivity;
@@ -121,20 +109,19 @@ public class HomeActivity extends AppCompatActivity {
             String sLongitud = String.valueOf(loc.getLongitude());
             txtLatitude.setText(sLatitud);
             txtLongitude.setText(sLongitud);
-          //  this.homeActivity.setLocation(loc);
         }
 
         @Override
         public void onProviderDisabled(String provider) {
             // Este metodo se ejecuta cuando el GPS es desactivado
-            Toast.makeText(HomeActivity.this,"Ubicacion Desactivada", Toast.LENGTH_SHORT).show();
+            Toast.makeText(HomeActivity.this, "Ubicacion Desactivada", Toast.LENGTH_SHORT).show();
 
         }
 
         @Override
         public void onProviderEnabled(String provider) {
             // Este metodo se ejecuta cuando el GPS es activado
-            Toast.makeText(HomeActivity.this,"Ubicacion Activada", Toast.LENGTH_SHORT).show();
+            Toast.makeText(HomeActivity.this, "Ubicacion Activada", Toast.LENGTH_SHORT).show();
         }
 
         @Override

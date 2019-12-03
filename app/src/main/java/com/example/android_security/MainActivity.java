@@ -3,7 +3,9 @@ package com.example.android_security;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -34,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         btnlogin = findViewById(R.id.btnLogin);
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-        if(currentUser!=null){
+        if (currentUser != null) {
             Intent intentHome = new Intent(MainActivity.this, HomeActivity.class);
             startActivity(intentHome);
         }
@@ -58,6 +60,12 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
+                                        //Almacenamiento Seguro
+                                        SharedPreferences sharedPreferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                                        editor.putString("email", user);
+                                        editor.putString("pass", pass);
+                                        editor.commit();
                                         Intent login = new Intent(MainActivity.this, HomeActivity.class);
                                         startActivity(login);
                                     } else {
