@@ -23,26 +23,19 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-import javax.crypto.spec.SecretKeySpec;
-
 public class HomeActivity extends AppCompatActivity {
-    private Button btnLogout, btnSave, btnGetContac, getBtnGetContac2;
-    private TextView txtName, txtEmail, txtLatitude, txtLongitude, txtNumber, txtNumber2;
+    private Button btnLogout;
+    private TextView txtUID, txtEmail, txtLatitude, txtLongitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         btnLogout = findViewById(R.id.btnLogout);
-        btnSave = findViewById(R.id.btnSave);
-        btnGetContac = findViewById(R.id.btnGetContact);
-        getBtnGetContac2 = findViewById(R.id.btnGetContac2);
-        txtName = findViewById(R.id.txtName);
+        txtUID = findViewById(R.id.txtUID);
         txtEmail = findViewById(R.id.txtEmail);
         txtLatitude = findViewById(R.id.txtLatitude);
         txtLongitude = findViewById(R.id.txtLongitude);
-        txtNumber = findViewById(R.id.txtNumber);
-        txtNumber2 = findViewById(R.id.txtNumber2);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION,}, 1000);
         } else {
@@ -59,9 +52,9 @@ public class HomeActivity extends AppCompatActivity {
         //Recuperar Datos SharedPreferences
         SharedPreferences sharedPreferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
         String email = sharedPreferences.getString("email", "");
-        String pass = sharedPreferences.getString("pass", "");
+        String uidUser = sharedPreferences.getString("uidUser", "");
         txtEmail.setText(email);
-        txtName.setText(pass);
+        txtUID.setText(uidUser);
     }
 
 

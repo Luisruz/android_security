@@ -18,6 +18,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
@@ -39,6 +41,8 @@ public class RegisterActivity extends AppCompatActivity {
     private Button btnRegister, btnReturn;
     String passUno, passDos, email;
     private FirebaseAuth firebaseAuth;
+    private FirebaseDatabase firebaseDB;
+    private DatabaseReference dbReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +54,8 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister = findViewById(R.id.btnRegister);
         btnReturn = findViewById(R.id.btnReturn);
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseDB = FirebaseDatabase.getInstance();
+        dbReference = firebaseDB.getReference();
 
         btnRegister.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,6 +96,16 @@ public class RegisterActivity extends AppCompatActivity {
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
+                                            //obtengo el uid del user
+                                            String uidUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                                            //guardo en realtime
+                                            User user = new User();
+                                            user.setUID(uidUser);
+                                            user.setEmail(email);
+                                            dbReference.child("Users").child(user.getUID()).setValue(user);
+                                            //guardo en SQLite
+                                            DBHelper dbHelper = new DBHelper(RegisterActivity.this);
+                                            dbHelper.insertData(email, uidUser, RegisterActivity.this);
                                             edtEmail.setText("");
                                             edtPassRegister.setText("");
                                             edtRepeatPassRegister.setText("");

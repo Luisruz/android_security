@@ -60,11 +60,12 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
+                                        String uidUser = FirebaseAuth.getInstance().getCurrentUser().getUid();
                                         //Almacenamiento Seguro
                                         SharedPreferences sharedPreferences = getSharedPreferences("preferences", Context.MODE_PRIVATE);
                                         SharedPreferences.Editor editor = sharedPreferences.edit();
                                         editor.putString("email", user);
-                                        editor.putString("pass", pass);
+                                        editor.putString("uidUser", uidUser);
                                         editor.commit();
                                         Intent login = new Intent(MainActivity.this, HomeActivity.class);
                                         startActivity(login);
